@@ -1,29 +1,38 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package NetMon;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.io.*;
 
 /**
  * @author Daniel
  */
+
 public class RemoteIP {
     public static String getIP(String hostname){
-        InetAddress address = null;
-        String IP = null;
-        try{
-            address = InetAddress.getByName(hostname);
-            IP = address.getHostAddress();
+        Socket socket = null;
+        boolean online = false;
+        String result = null;
+        
+        try {
+            try {
+                socket = new Socket(hostname, 80); //initially build a socket to a website.
+                online = true;
+                result = "Online";
+            } catch (IOException ex) { //if socket fails...
+                try {
+                    online = InetAddress.getByName(hostname).isReachable(10000); //check if reachable
+                    result = "Online";
+                } catch (IOException ex1) {
+                    result = "Offline";
+                }
+            }
+            
+        } 
+        finally {
+            if (socket != null) try { socket.close(); } catch(IOException e){}
         }
-        catch (UnknownHostException e){
-                        //System.out.println(e);
-                        IP = "Offline";
-                    }
-        return IP;
+        return result;
+        
     }
     
 }

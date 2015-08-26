@@ -12,31 +12,37 @@ import javax.swing.plaf.metal.MetalIconFactory;
  * @author Daniel
  */
 public class SysTray {
-   public static void main(String[] args) throws Exception {
-      TrayIcon icon = new TrayIcon(getImage(), "Java application as a tray icon", //Title on hover
-            createPopupMenu());
-      icon.addActionListener(new ActionListener() { //Creates a click listener for Tray Icon
-         public void actionPerformed(ActionEvent e) {
+   public static void buildIcon() {
+           if (SystemTray.isSupported()){
+          SystemTray tray = SystemTray.getSystemTray();
+          TrayIcon icon = new TrayIcon(getImage(), "Network Connectivity Monitor", createPopupMenu());
+          icon.addActionListener(new ActionListener() { //Creates a click listener for Tray Icon
+            public void actionPerformed(ActionEvent e) {
             JOptionPane.showMessageDialog(null, "Hey, you activated me!"); 
-         }
-      }); //end listener
-      SystemTray.getSystemTray().add(icon); 
-
-      Thread.sleep(1000);
-
-      icon.displayMessage("Attention", "Please click here", 
-            TrayIcon.MessageType.INFO);//popup message
+            }
+            }); //end listener);
+            try {
+                tray.add(icon);
+            }  catch (AWTException e){
+                System.err.println("System Tray Icon could not be added.");
+            }
+        }
    }
-   private static Image getImage() throws HeadlessException {
-      Icon defaultIcon = MetalIconFactory.getTreeHardDriveIcon();
+   public static void showMessage(String Title, String Body){
+       TrayIcon[] icon = SystemTray.getSystemTray().getTrayIcons();
+       icon[0].displayMessage(Title, Body, TrayIcon.MessageType.NONE); //create a message.
+   }
+   
+    private static Image getImage() throws HeadlessException {
+      Icon defaultIcon = MetalIconFactory.getTreeComputerIcon();
       Image img = new BufferedImage(defaultIcon.getIconWidth(), 
             defaultIcon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
       defaultIcon.paintIcon(new Panel(), img.getGraphics(), 0, 0);
 
       return img;
    }
-
-   private static PopupMenu createPopupMenu() throws HeadlessException {
+    
+     private static PopupMenu createPopupMenu() throws HeadlessException {
       PopupMenu menu = new PopupMenu();
 
       MenuItem exit = new MenuItem("Exit");//menu item button
