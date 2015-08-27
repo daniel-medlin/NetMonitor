@@ -20,6 +20,7 @@ public class NetMon {
                 SysTray.showMessage("Notice", "No hostname was entered.  Exiting now.");
             timeout(3000);
             System.exit(0);
+            
         }
         while(loop){ //main loop
             online=RemoteIP.getIP(remoteHost); //online-true offline-false
