@@ -13,7 +13,7 @@ import javax.swing.plaf.metal.MetalIconFactory;
  */
 public class SysTray {
    public static void buildIcon(String host) {
-        String title = "NetMon\n" + host;
+        String title = host;
            if (SystemTray.isSupported()){
           SystemTray tray = SystemTray.getSystemTray();
           TrayIcon icon = new TrayIcon(getImage(), title, createPopupMenu());

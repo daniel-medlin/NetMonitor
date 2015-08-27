@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 public class NetMon {
 
     public static void main(String[] args) {
-        JCheckBox checkbox = new JCheckBox("This is a web address?"); //checkbox for user to tell if website or local.
+        JCheckBox checkbox = new JCheckBox("This is a web address."); //checkbox for user to tell if website or local.
         Object[] params = {"Enter a Hostname or Web Address.", checkbox};
         String remoteHost=JOptionPane.showInputDialog(null,params,
                 null,JOptionPane.OK_CANCEL_OPTION); //User input for address.
