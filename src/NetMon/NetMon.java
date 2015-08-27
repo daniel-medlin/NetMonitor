@@ -7,11 +7,6 @@ import javax.swing.JOptionPane;
 public class NetMon {
 
     public static void main(String[] args) {
-        boolean loop=true;
-        boolean online=false;
-        boolean prevStatus=false;
-        
-        SysTray.buildIcon(); //build tray icon
         JCheckBox checkbox = new JCheckBox("This is a web address?"); //checkbox for user to tell if website or local.
         Object[] params = {"Enter a Hostname or Web Address.", checkbox};
         String remoteHost=JOptionPane.showInputDialog(null,params,
@@ -24,6 +19,21 @@ public class NetMon {
             timeout(3000);
             System.exit(0);
         }
+        SysTray.buildIcon(remoteHost); //build tray icon
+        mainLoop(remoteHost, website);
+        System.exit(0);
+    }
+    
+    public static void timeout(int ms){
+        try{Thread.sleep(ms);}
+        catch (Exception e){}
+    }
+    
+    public static void mainLoop(String remoteHost, boolean website){
+        boolean loop=true;
+        boolean online=false;
+        boolean prevStatus=false;
+        
         while(loop){ //main loop
             online=RemoteIP.getIP(remoteHost,website); //online-true offline-false
             System.err.println(remoteHost + " connectivity status: " + online);
@@ -46,11 +56,5 @@ public class NetMon {
             }
             timeout(5000);//check every 5 secs.
         } //end main loop
-        System.exit(0);
-    }
-    
-    public static void timeout(int ms){
-        try{Thread.sleep(ms);}
-        catch (Exception e){}
     }
 }

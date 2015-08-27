@@ -12,13 +12,14 @@ import javax.swing.plaf.metal.MetalIconFactory;
  * @author Daniel
  */
 public class SysTray {
-   public static void buildIcon() {
+   public static void buildIcon(String host) {
+        String title = "NetMon\n" + host;
            if (SystemTray.isSupported()){
           SystemTray tray = SystemTray.getSystemTray();
-          TrayIcon icon = new TrayIcon(getImage(), "Network Connectivity Monitor", createPopupMenu());
+          TrayIcon icon = new TrayIcon(getImage(), title, createPopupMenu());
           icon.addActionListener(new ActionListener() { //Creates a click listener for Tray Icon
             public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(null, "Hey, you activated me!"); 
+            JOptionPane.showMessageDialog(null, title); 
             }
             }); //end listener);
             try {
@@ -58,7 +59,7 @@ public class SysTray {
           }
       });
       menu.add(exit); //create menu here
-      menu.add(hello);
+      //menu.add(hello);
 
       return menu;
    }

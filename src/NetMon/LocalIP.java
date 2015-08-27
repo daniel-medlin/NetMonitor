@@ -27,7 +27,7 @@ public class LocalIP {
         }
         }catch (SocketException e){
             System.out.println(e);
-            System.exit(3);
+            System.exit(0);
         }
         return localIP;
     }
