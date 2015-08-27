@@ -1,5 +1,5 @@
-package NetMon;
-
+package NetMon; 
+//This is here for possible future use.
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;

@@ -1,11 +1,11 @@
-package NetMon;
+package NetMon; 
 
 import java.net.*;
 import java.io.*;
 
 /**
  * @author Daniel
- */
+ */ 
 
 public class RemoteIP {
     public static boolean getIP(String hostname, boolean website){
