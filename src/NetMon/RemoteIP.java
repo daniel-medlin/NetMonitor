@@ -8,29 +8,36 @@ import java.io.*;
  */
 
 public class RemoteIP {
-    public static boolean getIP(String hostname){
-        Socket socket = null;
+    public static boolean getIP(String hostname, boolean website){
         boolean online = false;
         boolean result = false;
-        
-        try {
+        if (website){
+            Socket socket = null;
+
             try {
-                socket = new Socket(hostname, 80); //initially build a socket to a website.
-                online = true;
-                result = true;
-            } catch (IOException ex) { //if socket fails...
                 try {
-                    online = InetAddress.getByName(hostname).isReachable(1000); //check if reachable
+                    socket = new Socket(hostname, 80); //initially build a socket to a website.
+                    online = true;
                     result = true;
-                } catch (IOException ex1) {
-                    result = false;
+                } catch (IOException ex) { //if socket fails...
+                    try {
+                        online = InetAddress.getByName(hostname).isReachable(1000); //check if reachable
+                        result = true;
+                    } catch (IOException ex1) {
+                        result = false;
+                    }
                 }
+
+            } 
+            finally {
+                if (socket != null) try { socket.close(); } catch(IOException e){}
             }
-            
-        } 
-        finally {
-            if (socket != null) try { socket.close(); } catch(IOException e){}
-        }
+        } else try {
+                        online = InetAddress.getByName(hostname).isReachable(1000); //check if reachable
+                        result = true;
+                    } catch (IOException ex1) {
+                        result = false;
+                    }
         return result;
         
     }
