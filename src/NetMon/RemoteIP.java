@@ -8,22 +8,22 @@ import java.io.*;
  */
 
 public class RemoteIP {
-    public static String getIP(String hostname){
+    public static boolean getIP(String hostname){
         Socket socket = null;
         boolean online = false;
-        String result = null;
+        boolean result = false;
         
         try {
             try {
                 socket = new Socket(hostname, 80); //initially build a socket to a website.
                 online = true;
-                result = "Online";
+                result = true;
             } catch (IOException ex) { //if socket fails...
                 try {
-                    online = InetAddress.getByName(hostname).isReachable(10000); //check if reachable
-                    result = "Online";
+                    online = InetAddress.getByName(hostname).isReachable(1000); //check if reachable
+                    result = true;
                 } catch (IOException ex1) {
-                    result = "Offline";
+                    result = false;
                 }
             }
             
