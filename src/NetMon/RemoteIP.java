@@ -1,17 +1,17 @@
-package NetMon; 
+package NetMon;
 
 import java.net.*;
 import java.io.*;
 
 /**
  * @author Daniel
- */ 
-
+ */
 public class RemoteIP {
-    public static boolean getIP(String hostname, boolean website){
+
+    public static boolean getIP(String hostname, boolean website) {
         boolean online = false;
         boolean result = false;
-        if (website){
+        if (website) {
             Socket socket = null;
 
             try {
@@ -28,18 +28,24 @@ public class RemoteIP {
                     }
                 }
 
-            } 
-            finally {
-                if (socket != null) try { socket.close(); } catch(IOException e){}
-            }
-        } else try {
-                        online = InetAddress.getByName(hostname).isReachable(1000); //check if reachable
-                        result = true;
-                    } catch (IOException ex1) {
-                        result = false;
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
                     }
+                }
+            }
+        } else {
+            try {
+                online = InetAddress.getByName(hostname).isReachable(1000); //check if reachable
+                result = true;
+            } catch (IOException ex1) {
+                result = false;
+            }
+        }
         return result;
-        
+
     }
-    
+
 }
