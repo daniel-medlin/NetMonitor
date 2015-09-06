@@ -11,22 +11,27 @@ import javax.swing.plaf.metal.MetalIconFactory;
  */
 public class SysTray {
 
-    public static MainLoop mainLoop;
     public static Daemon daemon;
+    public static SystemTray tray;
+    public static TrayIcon icon;
+    public static String hostName;
+    public static String msgBody;
 
-    public static void init(MainLoop m, Daemon d) {
-        mainLoop = m;
+    public static void init(Daemon d) {
         daemon = d;
+        //tray=t;
     }
 
     public void buildIcon(String host) {
         String title = host;
+        hostName = host;
         if (SystemTray.isSupported()) {
-            SystemTray tray = SystemTray.getSystemTray();
-            TrayIcon icon = new TrayIcon(getImage(), title, createPopupMenu());
+            tray = SystemTray.getSystemTray();
+            icon = new TrayIcon(getImage(), title, createPopupMenu());
             icon.addActionListener(new ActionListener() { //Creates a click listener for Tray Icon
                 public void actionPerformed(ActionEvent e) {
-                    JOptionPane.showMessageDialog(null, title);
+                    System.err.println(e);
+                    JOptionPane.showMessageDialog(null, title + "\n" + msgBody);
                 }
             }); //end listener);
             try {
@@ -38,8 +43,9 @@ public class SysTray {
     }
 
     public static void showMessage(String Title, String Body) {
-        TrayIcon[] icon = SystemTray.getSystemTray().getTrayIcons();
-        icon[0].displayMessage(Title, Body, TrayIcon.MessageType.NONE); //create a message.
+        msgBody = Body;
+        TrayIcon[] myicon = SystemTray.getSystemTray().getTrayIcons();
+        myicon[0].displayMessage(Title, Body, TrayIcon.MessageType.NONE); //create a message.
     }
 
     private static Image getImage() throws HeadlessException {
@@ -53,29 +59,36 @@ public class SysTray {
 
     private static PopupMenu createPopupMenu() throws HeadlessException {
         PopupMenu menu = new PopupMenu();
-        Daemon d = new Daemon();
 
         MenuItem exit = new MenuItem("Exit");//menu item button
-        exit.addActionListener(new ActionListener() { //start listener
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0); //action on click
-            }
-        });//end listener
-        MenuItem start = new MenuItem("Start"); //new menu item same setup
-        start.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                daemon.start("previous_host");
-            }
-        });
+        exit.addActionListener((ActionEvent e) -> {
+            System.err.println(e);
+            System.exit(0); //action on click
+        } //start listener
+        );//end listener
         MenuItem stop = new MenuItem("Stop"); //new menu item same setup
-        stop.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                daemon.stop();
-            }
+        stop.addActionListener((ActionEvent e) -> {
+            System.err.println(e);
+            daemon.stop();
+            showMessage(hostName, "Stopped monitoring");
         });
-        menu.add(exit); //create menu here
+        MenuItem start = new MenuItem("Start"); //new menu item same setup
+        start.addActionListener((ActionEvent e) -> {
+            System.err.println(e);
+            daemon.start(null);
+        });
+        MenuItem changeHost = new MenuItem("Change Host");
+        changeHost.addActionListener((ActionEvent e) -> {
+            System.err.println(e);
+            daemon.changeHost();
+
+        });
+        //create menu here
         menu.add(start);
         menu.add(stop);
+        menu.add(changeHost);
+        menu.addSeparator();
+        menu.add(exit);
 
         return menu;
     }

@@ -6,39 +6,66 @@ import static NetMon.NetMon.timeout;
  *
  * @author Daniel
  */
-public class MainLoop {
+class MainLoop implements Runnable {
 
-    public static boolean run;
+    private Thread t;
+    public boolean run;
+    private boolean prevStatus = false;
+    private boolean web;
+    private String host;
 
-    public void running(boolean running, boolean website, String remoteHost) {
-        run = running;
+    MainLoop(boolean go, boolean website, String remoteHost) {
+        run = go;
+        web = website;
+        host = remoteHost;
+    }
+
+    public void run() {
         boolean online;
-        boolean prevStatus = false;
-        while (true) { //infinite loop to run until program exits
-            while (run) { //main loop
-                online = RemoteIP.getIP(remoteHost, website); //online-true offline-false
-                System.err.println(remoteHost + " connectivity status: " + online);
-                if (online && !prevStatus) { //device is online but was offline last I checked...or this is the first run.
-                    System.err.println("Device is online but prevState is offline...Rechecking");
-                    timeout(5000);
-                    if (RemoteIP.getIP(remoteHost, website)) {
-                        System.err.println(remoteHost + " is online");
-                        prevStatus = true;
-                        SysTray.showMessage(remoteHost, "Online");
-                    }
-                } else if (!online && prevStatus) { //device is offline but was online last I checked...
-                    System.err.println("Device is offline but prevState is online...Rechecking");
-                    timeout(5000);
-                    if (!RemoteIP.getIP(remoteHost, website)) {
-                        System.err.println(remoteHost + " is Offline");
-                        prevStatus = false;
-                        SysTray.showMessage(remoteHost, "Offline");
-                    }
+        boolean first = true;
+        while (run) {
+            online = RemoteIP.getIP(host, web); //online-true offline-false
+            System.err.println(host + " connectivity status: " + online);
+            if (online && !prevStatus) { //device is online but was offline last I checked...or this is the first run.
+                System.err.println("Device is online but prevState is offline...Rechecking");
+                timeout(5000);
+                if (RemoteIP.getIP(host, web)) {
+                    System.err.println(host + " is online");
+                    prevStatus = true;
+                    SysTray.showMessage(host, "Online");
                 }
-                timeout(5000);//check every 5 secs.
-            } //end main loop
-        }
+            } else if (!online && prevStatus) { //device is offline but was online last I checked...
+                System.err.println("Device is offline but prevState is online...Rechecking");
+                timeout(5000);
+                if (!RemoteIP.getIP(host, web)) {
+                    System.err.println(host + " is Offline");
+                    prevStatus = false;
+                    SysTray.showMessage(host, "Offline");
+                }
+            }
+            if (first) {
+                if (!online) {
+                    SysTray.showMessage(host, "Offline");
+                    first = false;
+                }
+            }
+            timeout(5000);//check every 5 secs.
 
+        }
+    }
+
+    public void start() {
+        if (t == null) {
+            System.err.println("Scanning " + host);
+            {
+                t = new Thread(this, host);
+                t.start();
+            }
+        }
+    }
+
+    public void stop() {
+        run = false;
     }
 
 }
