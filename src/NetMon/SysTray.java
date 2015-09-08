@@ -83,11 +83,17 @@ public class SysTray {
             daemon.changeHost();
 
         });
+        MenuItem about = new MenuItem("About");
+        about.addActionListener((ActionEvent e) -> {
+            System.err.println(e);
+            JOptionPane.showMessageDialog(null, "This software was written by b00st3d on HackForums\n\nAll options are common sense with stop halting the scan, \nstart restarting the scan on the previous host, \nand Change Host allwoing a new host entry.");
+        });
         //create menu here
         menu.add(start);
         menu.add(stop);
         menu.add(changeHost);
         menu.addSeparator();
+        menu.add(about);
         menu.add(exit);
 
         return menu;
