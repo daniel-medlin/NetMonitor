@@ -29,7 +29,7 @@ public class RemoteIP {
 
     }
 
-    public static boolean isReachableByPing(String host) {
+    public static boolean isReachableByPing(String host) { //from best answer on stackOverflow http://stackoverflow.com/questions/18321118/best-alternative-for-inetaddress-getbynamehost-isreachabletimeout
         try {
             String cmd = "";
 
