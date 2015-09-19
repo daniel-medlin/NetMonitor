@@ -1,6 +1,6 @@
 package NetMon;
 
-import static NetMon.NetMon.timeout;
+import static NetMon.Daemon.timeout;
 
 /**
  *
@@ -13,11 +13,17 @@ class MainLoop implements Runnable {
     private boolean prevStatus = false;
     private boolean web;
     private String host;
+    private String name;
 
-    MainLoop(boolean go, boolean website, String remoteHost) {
+    MainLoop(boolean go, boolean website, String remoteHost, String deviceName) {
         run = go;
         web = website;
         host = remoteHost;
+        if (deviceName != null) {
+            name = deviceName;
+        } else {
+            name = host;
+        }
     }
 
     public void run() {
@@ -32,7 +38,7 @@ class MainLoop implements Runnable {
                 if (RemoteIP.getIP(host, web)) {
                     System.err.println(host + " is online");
                     prevStatus = true;
-                    SysTray.showMessage(host, "Online");
+                    SysTray.showMessage(name, "Online");
                 }
             } else if (!online && prevStatus) { //device is offline but was online last I checked...
                 System.err.println("Device is offline but prevState is online...Rechecking");
@@ -40,12 +46,12 @@ class MainLoop implements Runnable {
                 if (!RemoteIP.getIP(host, web)) {
                     System.err.println(host + " is Offline");
                     prevStatus = false;
-                    SysTray.showMessage(host, "Offline");
+                    SysTray.showMessage(name, "Offline");
                 }
             }
             if (first) {
                 if (!online) {
-                    SysTray.showMessage(host, "Offline");
+                    SysTray.showMessage(name, "Offline");
                     first = false;
                 }
             }

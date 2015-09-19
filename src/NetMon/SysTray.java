@@ -16,24 +16,27 @@ public class SysTray {
     public static TrayIcon icon;
     public static String hostName;
     public static String msgBody;
+    public static TrayIcon myIcon;
 
     public static void init(Daemon d) {
         daemon = d;
         //tray=t;
     }
 
-    public void buildIcon(String host) {
-        String title = host;
+    public void buildIcon(String host, String name) {
+        if (name == null)
+            name=host;
+        String title = name;
         hostName = host;
         if (SystemTray.isSupported()) {
             tray = SystemTray.getSystemTray();
             icon = new TrayIcon(getImage(), title, createPopupMenu());
-            icon.addActionListener(new ActionListener() { //Creates a click listener for Tray Icon
-                public void actionPerformed(ActionEvent e) {
-                    System.err.println(e);
-                    JOptionPane.showMessageDialog(null, title + "\n" + msgBody);
-                }
-            }); //end listener);
+            myIcon = icon;
+            icon.addActionListener((ActionEvent e) -> {
+                System.err.println(e);
+                JOptionPane.showMessageDialog(null, title + "\n" + msgBody);
+            } //Creates a click listener for Tray Icon
+            ); //end listener);
             try {
                 tray.add(icon);
             } catch (AWTException e) {
@@ -44,8 +47,7 @@ public class SysTray {
 
     public static void showMessage(String Title, String Body) {
         msgBody = Body;
-        TrayIcon[] myicon = SystemTray.getSystemTray().getTrayIcons();
-        myicon[0].displayMessage(Title, Body, TrayIcon.MessageType.NONE); //create a message.
+        myIcon.displayMessage(Title, Body, TrayIcon.MessageType.NONE);
     }
 
     private static Image getImage() throws HeadlessException {
@@ -86,8 +88,9 @@ public class SysTray {
         MenuItem about = new MenuItem("About");
         about.addActionListener((ActionEvent e) -> {
             System.err.println(e);
-            JOptionPane.showMessageDialog(null, "This software was written by b00st3d on HackForums\n\nAll options are common sense with stop halting the scan, \nstart restarting the scan on the previous host, \nand Change Host allwoing a new host entry.");
+            JOptionPane.showMessageDialog(null, "This software was written by b00st3d on HackForums\n\nAll options are common sense with stop halting the scan, \nstart restarting the scan on the previous host, \nand Change Host allowing a new host entry.");
         });
+
         //create menu here
         menu.add(start);
         menu.add(stop);
