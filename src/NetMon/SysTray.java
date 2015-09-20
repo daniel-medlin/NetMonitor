@@ -17,6 +17,7 @@ public class SysTray {
     public static String hostName;
     public static String msgBody;
     public static TrayIcon myIcon;
+    public static String title;
 
     public static void init(Daemon d) {
         daemon = d;
@@ -26,7 +27,7 @@ public class SysTray {
     public void buildIcon(String host, String name) {
         if (name == null)
             name=host;
-        String title = name;
+        title = name;
         hostName = host;
         if (SystemTray.isSupported()) {
             tray = SystemTray.getSystemTray();
@@ -72,7 +73,7 @@ public class SysTray {
         stop.addActionListener((ActionEvent e) -> {
             System.err.println(e);
             daemon.stop();
-            showMessage(hostName, "Stopped monitoring");
+            showMessage(title, "Stopped monitoring");
         });
         MenuItem start = new MenuItem("Start"); //new menu item same setup
         start.addActionListener((ActionEvent e) -> {
