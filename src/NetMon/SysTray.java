@@ -21,32 +21,38 @@ public class SysTray {
 
     public static void init(Daemon d) {
         daemon = d;
-        //tray=t;
     }
 
     public void buildIcon(String host, String name) {
-        if (name == null)
-            name=host;
+        if (name == null) {
+            name = host;
+        }
         title = name;
         hostName = host;
         if (SystemTray.isSupported()) {
             tray = SystemTray.getSystemTray();
             icon = new TrayIcon(getImage(), title, createPopupMenu());
             myIcon = icon;
-            icon.addActionListener((ActionEvent e) -> {
+            icon.addActionListener((ActionEvent e) -> {//Creates a click listener for Tray Icon
                 System.err.println(e);
                 JOptionPane.showMessageDialog(null, title + "\n" + msgBody);
-            } //Creates a click listener for Tray Icon
+            }
             ); //end listener);
             try {
                 tray.add(icon);
             } catch (AWTException e) {
                 System.err.println("System Tray Icon could not be added.");
             }
+        } else {
+            System.err.println("SystemTray is not supported on this system.");
         }
     }
 
-    public static void showMessage(String Title, String Body) {
+    public static void setToolTip(String toolTip) { //Method to change tool tip.
+        icon.setToolTip(toolTip);
+    }
+
+    public static void showMessage(String Title, String Body) { //Method to generate popup
         msgBody = Body;
         myIcon.displayMessage(Title, Body, TrayIcon.MessageType.NONE);
     }
@@ -67,15 +73,15 @@ public class SysTray {
         exit.addActionListener((ActionEvent e) -> {
             System.err.println(e);
             System.exit(0); //action on click
-        } //start listener
+        }
         );//end listener
-        MenuItem stop = new MenuItem("Stop"); //new menu item same setup
+        MenuItem stop = new MenuItem("Stop");
         stop.addActionListener((ActionEvent e) -> {
             System.err.println(e);
             daemon.stop();
             showMessage(title, "Stopped monitoring");
         });
-        MenuItem start = new MenuItem("Start"); //new menu item same setup
+        MenuItem start = new MenuItem("Start");
         start.addActionListener((ActionEvent e) -> {
             System.err.println(e);
             daemon.start(null);
@@ -90,6 +96,10 @@ public class SysTray {
         about.addActionListener((ActionEvent e) -> {
             System.err.println(e);
             JOptionPane.showMessageDialog(null, "This software was written by b00st3d on HackForums\n\nAll options are common sense with stop halting the scan, \nstart restarting the scan on the previous host, \nand Change Host allowing a new host entry.");
+        });
+        MenuItem test = new MenuItem("test");
+        test.addActionListener((ActionEvent e) -> {
+            setToolTip("Hello");
         });
 
         //create menu here

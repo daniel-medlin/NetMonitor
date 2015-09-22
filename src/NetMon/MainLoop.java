@@ -31,6 +31,11 @@ class MainLoop implements Runnable {
         boolean first = true;
         while (run) {
             online = RemoteIP.getIP(host, web); //online-true offline-false
+            if (online) {
+                SysTray.setToolTip(name + " - Online");
+            } else {
+                SysTray.setToolTip(name + " - Offline");
+            }
             System.err.println(host + " connectivity status: " + online);
             if (online && !prevStatus) { //device is online but was offline last I checked...or this is the first run.
                 System.err.println("Device is online but prevState is offline...Rechecking");

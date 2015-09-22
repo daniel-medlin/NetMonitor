@@ -10,8 +10,6 @@ public class RemoteIP {
 
     public static boolean getIP(String hostname, boolean website) {
         boolean result = false;
-        InetAddress address;
-        boolean reachable;
         if (website) {
             Socket socket = null;
 

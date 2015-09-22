@@ -26,14 +26,14 @@ public class Daemon {
     public static ReturningValues userInput() { //get user input and return values using the ReturningValues Class.
         ReturningValues rv = new ReturningValues();
         JTextField name = new JTextField();
-            name.setToolTipText("Enter a name for the device or website you want to monitor(ie.: Google)");
+        name.setToolTipText("Enter a name for the device or website you want to monitor(ie.: Google)");
         JTextPane hostLabel = new JTextPane();
-            hostLabel.setEditorKit(new HTMLEditorKit());
-            hostLabel.setText("<html><span color='red'>*</span>Hostname or Web Address:</html>");
-            hostLabel.setOpaque(false);//makes background of the label transparent.
-            hostLabel.setFocusable(false);
+        hostLabel.setEditorKit(new HTMLEditorKit());
+        hostLabel.setText("<html><span color='red'>*</span>Hostname or Web Address:</html>");
+        hostLabel.setOpaque(false);//makes background of the label transparent.
+        hostLabel.setFocusable(false);
         JTextField host = new JTextField();
-            host.setToolTipText("Enter the address fro the device you want to monitor (ie.: www.google.com or 192.168.0.1)");
+        host.setToolTipText("Enter the address fro the device you want to monitor (ie.: www.google.com or 192.168.0.1)");
         JCheckBox checkbox = new JCheckBox("This is a web address."); //checkbox for user to tell if website or local.
         Object[] params = {
             "Display Name:", name, "\n",
