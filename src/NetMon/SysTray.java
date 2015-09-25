@@ -9,13 +9,13 @@ import javax.swing.plaf.metal.MetalIconFactory;
 /**
  * @author Daniel
  */
-public class SysTray {
+public class SysTray {  //interacts with the systray icon.
 
     public static Daemon daemon;
     public static SystemTray tray;
     public static TrayIcon icon;
     public static String hostName;
-    public static String msgBody;
+    public static String msgBody = "Scanning...";
     public static TrayIcon myIcon;
     public static String title;
 
@@ -23,8 +23,8 @@ public class SysTray {
         daemon = d;
     }
 
-    public void buildIcon(String host, String name) {
-        if (name == null) {
+    public void buildIcon(String host, String name) { //builds the initial tray icon which can later be manipulated.
+        if (name == null) { //determine if the user provided a name.  If not, name should be the hostname or ip address for labeling purposes
             name = host;
         }
         title = name;
@@ -35,7 +35,7 @@ public class SysTray {
             myIcon = icon;
             icon.addActionListener((ActionEvent e) -> {//Creates a click listener for Tray Icon
                 System.err.println(e);
-                JOptionPane.showMessageDialog(null, title + "\n" + msgBody);
+                JOptionPane.showMessageDialog(null, msgBody);
             }
             ); //end listener);
             try {
@@ -48,16 +48,16 @@ public class SysTray {
         }
     }
 
-    public static void setToolTip(String toolTip) { //Method to change tool tip.
+    public static void setToolTip(String toolTip) { //Method to change tool tip on hover.
         icon.setToolTip(toolTip);
     }
 
     public static void showMessage(String Title, String Body) { //Method to generate popup
-        msgBody = Body;
+        msgBody = "Name: " + title + "\nAddress: " + hostName + "\n\n" + Body;
         myIcon.displayMessage(Title, Body, TrayIcon.MessageType.NONE);
     }
 
-    private static Image getImage() throws HeadlessException {
+    private static Image getImage() throws HeadlessException { //used to create the tray icon for use in buildIcon()
         Icon defaultIcon = MetalIconFactory.getTreeComputerIcon();
         Image img = new BufferedImage(defaultIcon.getIconWidth(),
                 defaultIcon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
@@ -66,7 +66,7 @@ public class SysTray {
         return img;
     }
 
-    private static PopupMenu createPopupMenu() throws HeadlessException {
+    private static PopupMenu createPopupMenu() throws HeadlessException { //defines the popup menu actions and buttons.
         PopupMenu menu = new PopupMenu();
 
         MenuItem exit = new MenuItem("Exit");//menu item button
@@ -97,9 +97,9 @@ public class SysTray {
             System.err.println(e);
             JOptionPane.showMessageDialog(null, "This software was written by b00st3d on HackForums\n\nAll options are common sense with stop halting the scan, \nstart restarting the scan on the previous host, \nand Change Host allowing a new host entry.");
         });
-        MenuItem test = new MenuItem("test");
-        test.addActionListener((ActionEvent e) -> {
-            setToolTip("Hello");
+        MenuItem status = new MenuItem("Status");
+        status.addActionListener((ActionEvent e) -> {
+            JOptionPane.showMessageDialog(null, msgBody);
         });
 
         //create menu here
@@ -107,6 +107,7 @@ public class SysTray {
         menu.add(stop);
         menu.add(changeHost);
         menu.addSeparator();
+        menu.add(status);
         menu.add(about);
         menu.add(exit);
 

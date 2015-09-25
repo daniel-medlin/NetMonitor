@@ -7,9 +7,8 @@ import javax.swing.text.html.HTMLEditorKit;
  *
  * @author Daniel
  */
-public class Daemon {
+public class Daemon { //All classes interact with this class in order to control the application
 
-    //public static MainLoop main;
     public static SysTray tray;
     public static String remoteHost;
     public static boolean website;
@@ -17,31 +16,40 @@ public class Daemon {
     public static boolean run;
     public static MainLoop main;
 
-    //public static void init(MainLoop m, SysTray t) {
     public static void init(SysTray t) {
-        //main = m;
         tray = t;
     }
 
-    public static ReturningValues userInput() { //get user input and return values using the ReturningValues Class.
-        ReturningValues rv = new ReturningValues();
+    public static ReturningValues userInput(boolean first) { //get user input and return values using the ReturningValues Class. 
+        ReturningValues rv = new ReturningValues();          //If first = true then cancel exit's else it doesn't change anything.
         JTextField name = new JTextField();
         name.setToolTipText("Enter a name for the device or website you want to monitor(ie.: Google)");
         JTextPane hostLabel = new JTextPane();
         hostLabel.setEditorKit(new HTMLEditorKit());
-        hostLabel.setText("<html><span color='red'>*</span>Hostname or Web Address:</html>");
+        hostLabel.setText("<html><span color='red'>*</span>Hostname or Web Address:</html>"); //uses HTML in order to put a red * by this field as it is required
         hostLabel.setOpaque(false);//makes background of the label transparent.
         hostLabel.setFocusable(false);
         JTextField host = new JTextField();
-        host.setToolTipText("Enter the address fro the device you want to monitor (ie.: www.google.com or 192.168.0.1)");
+        host.setToolTipText("Enter the address for the device you want to monitor (ie.: www.google.com or 192.168.0.1)");
         JCheckBox checkbox = new JCheckBox("This is a web address."); //checkbox for user to tell if website or local.
         Object[] params = {
             "Display Name:", name, "\n",
             checkbox,
             hostLabel, host
         };
-        JOptionPane.showConfirmDialog(null, params, "Network Monitor", JOptionPane.OK_CANCEL_OPTION); //User input for address.
+        int n = JOptionPane.showConfirmDialog(null, params, "Network Monitor", JOptionPane.OK_CANCEL_OPTION); //User input for address.
+        if (n == JOptionPane.CANCEL_OPTION) { //For cancel if it is the first run, then close the program.  If it is a change host the cancel the changes.
+            if (first) {
+                System.err.println("User selected cancel.  Exiting.");
+                System.exit(0);
+            } else { //reset rv to the previous settings and return
+                rv.setName(deviceName);
+                rv.setRemoteHost(remoteHost);
+                rv.setWebsite(website);
+                return rv;
+            }
 
+        }
         rv.setWebsite(checkbox.isSelected());
 
         rv.setRemoteHost(host.getText());
@@ -60,9 +68,8 @@ public class Daemon {
         System.err.println("Device Name: " + deviceName);
 
         if (remoteHost.equals("")) {
-            JOptionPane.showMessageDialog(null, "Error: No hostname was entered.  Exiting now.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.err.println("No user input");
-            System.exit(1);
+            JOptionPane.showMessageDialog(null, "Error: No hostname was entered.  Try Again.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.err.println("No hostname input");
         }
         return rv;
     }
@@ -77,7 +84,6 @@ public class Daemon {
             run = true;
             main = new MainLoop(true, website, remoteHost, deviceName);
             main.start();
-            //main.run();
 
         } else {
             System.err.println("Scan is already running.");
@@ -89,19 +95,27 @@ public class Daemon {
             System.err.println("Stopping");
             main.run = false;
             run = false;
-            //main.stop();
         } else {
             System.err.println("Scan is already stopped.");
         }
     }
 
     public void changeHost() {
+        ReturningValues rv = null;
+        boolean valid = false;
+
         if (run) {
             stop();
         }
 
         SysTray.tray.remove(SysTray.icon);//attempt to remove tray Icon
-        ReturningValues rv = userInput();
+        while (!valid) {
+            rv = userInput(false);
+            System.out.println(rv.getRemoteHost());
+            if (!rv.getRemoteHost().equals("")) {
+                valid = true;
+            }
+        }
         remoteHost = rv.getRemoteHost();
         tray.buildIcon(rv.getRemoteHost(), rv.getName());
         start(remoteHost);
